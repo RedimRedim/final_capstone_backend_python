@@ -1,0 +1,17 @@
+# Ignore node_modules directory
+node_modules/
+
+# Ignore environment variable files
+*.env
+
+# Ignore Python cache directories and files
+__pycache__/
+*pycache/
+*.pyc
+
+# Ignore log files
+*.log
+
+my_env/
+
+.DS_Store
