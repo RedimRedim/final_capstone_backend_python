@@ -1,8 +1,11 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import asyncio
 import os
+import json
 import logging
 import traceback
+from datetime import datetime
 from component.instance_setup import (
     timekeepingDbInstance,
     calculateMonthlySalaryInstance,
@@ -11,13 +14,17 @@ from component.instance_setup import (
 
 logging.basicConfig(level=logging.INFO)
 app = Flask(__name__)
+CORS(app)  # enable cors
 
 
 def main(file):
     try:
         jsonData = fileHandlingInstance.init_file(file)
         timekeepingDbInstance.write_db(jsonData)
-        calculateMonthlySalaryInstance.merging_data()
+        calculateMonthlySalaryInstance.transform_data()
+        salaryJsonData = calculateMonthlySalaryInstance.get_salary_data()
+
+        return salaryJsonData
     except:
         logging.error(traceback.format_exc())
         raise
@@ -32,9 +39,9 @@ def upload_timekeeping():
         return jsonify({"error": "No file selected"}), 400
 
     try:
-        main(file)
+        salaryJsonData = main(file)
         # run timekeeping and calculate monthly salary to push into "salary" collection
-        return jsonify({"message": "File has been processed and inputted to DB"}), 200
+        return jsonify({"calculateTime": datetime.now(), "data": salaryJsonData}), 200
     except Exception as e:
         logging.error("Error processing file:")
         logging.error(traceback.format_exc())

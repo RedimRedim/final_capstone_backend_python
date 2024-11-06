@@ -27,6 +27,13 @@ class CalculateMonthlySalary:
         self.employeesDf = pd.DataFrame()  # Initialize as empty DataFrame
         self.timekeepingDf = pd.DataFrame()  # Initialize as empty DataFrame
 
+    def transform_data(self):
+        self.merging_data()
+        self.post_to_db()
+        print("Uploading employees.csv")
+        print(self.employeesDf)
+        self.employeesDf.to_csv("./data/employees.csv")
+
     def merging_data(self):
         cutoff_date = pd.to_datetime("2024-07-01")
 
@@ -66,7 +73,7 @@ class CalculateMonthlySalary:
         self.employeesDf["baseSalary"] = self.employeesDf.apply(
             lambda row: (
                 row["basicSalary"] / row["requiredWorkDays"] * row["resignDate"].day
-                if pd.notnull(row["resignDate"]) and row["resignDate"] is not pd.NaT
+                if row["isResign"] and row["resignDate"] > cutoff_date
                 else row["dailySalary"] * (row["finishedWork"] + row["restDay"])
             ),
             axis=1,
@@ -88,22 +95,21 @@ class CalculateMonthlySalary:
             ),
             axis=1,
         )
-        print("Uploading employees.csv")
-        print(self.employeesDf)
-        self.employeesDf.to_csv("./data/employees.csv")
-        self.post_to_db()
+
+        self.employeesDf = self.employeesDf.fillna("")
 
     def post_to_db(self):
         self.collection = self.mongoDbInstance.get_collection(
             os.getenv("COLLECTION_SALARY_NAME")
         )
-
         self.collection.delete_many({})
 
         self.collection.insert_many(self.employeesDf.to_dict("records"))
         print("Salary has been uploaded to MongoDB")
 
-
-# def main():
-#     calculate_monthly_salary = CalculateMonthlySalary()
-#     calculate_monthly_salary.merging_data()
+    def get_salary_data(self):
+        self.collection = self.mongoDbInstance.get_collection(
+            os.getenv("COLLECTION_SALARY_NAME")
+        )
+        salaryData = list(self.collection.find({}, {"_id": False}))
+        return salaryData

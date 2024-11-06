@@ -33,9 +33,11 @@ class TimekeepingDb:
         self.collection = self.mongoDbInstance.get_collection(
             os.getenv("COLLECTION_TIMEKEEPING_NAME")
         )
-        timekeepingData = list(self.collection.find({}))
+        timekeepingData = list(self.collection.find({}, {"_id": False}))
         timekeepingDf = pd.DataFrame(timekeepingData)
-        timekeepingDf["_id"] = timekeepingDf["_id"].astype(str)
+        # Replace NaN with None for JSON serialization timekeepingDf = timekeepingDf.where(pd.notnull(timekeepingDf), None
+        timekeepingDf = timekeepingDf.where(pd.notnull(timekeepingDf), None)
+
         query = """SELECT uuid,name, COUNT(case when status like "%RD%" then 1 end) as restDay, sum(finishedwork) as finishedWork, sum(late) as late , sum(absent) as absent
         FROM timekeepingDf GROUP BY uuid"""
 

@@ -38,7 +38,7 @@ class FileHandling:
             ]
 
     def timekeeping_with_absent_data(self):
-        self.timekeepingDf = pd.read_excel(self.filePath)
+        self.timekeepingDf = pd.read_excel(self.filePath).fillna("")
         employeeData = self.employees.get_employees_data()[
             ["uuid", "isResign", "resignDate"]
         ]
@@ -107,7 +107,7 @@ class FileHandling:
                 if pd.notnull(row["timeIn"])
                 and pd.notnull(row["timeOut"])
                 and row["timeIn"] > row["workingTime"]
-                else ""
+                else 0
             ),
             axis=1,
         )
@@ -125,7 +125,7 @@ class FileHandling:
                 else (
                     1
                     if (row["finishedWork"] == 0) or (row["totalWorkHours"] <= 320)
-                    else ""
+                    else 0
                 )
             ),
             axis=1,
@@ -133,10 +133,10 @@ class FileHandling:
 
         self.timekeepingDf["totalWorkHours"] = self.timekeepingDf[
             "totalWorkHours"
-        ].apply(lambda x: (int(x) if pd.notnull(x) and x != "" else None))
+        ].apply(lambda x: (int(x) if pd.notnull(x) and x != "" else 0))
 
         self.timekeepingDf["late"] = self.timekeepingDf["late"].apply(
-            lambda x: (int(x) if pd.notnull(x) and x != "" else None)
+            lambda x: (int(x) if pd.notnull(x) and x != "" else 0)
         )
 
         self.timekeepingDf.to_csv("./data/timekeeping.csv")

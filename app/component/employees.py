@@ -24,8 +24,7 @@ class Employees:
         )
 
         employeeData = list(self.collection.find({}))
-        employeeDf = pd.DataFrame(employeeData)
-        print(employeeDf.dtypes)
+        employeeDf = pd.DataFrame(employeeData).fillna("")
         return employeeDf
 
 
