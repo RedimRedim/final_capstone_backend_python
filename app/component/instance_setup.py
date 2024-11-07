@@ -10,8 +10,10 @@ print("MongoDbConnection instance created:", mongoDbConnectionInstance)
 employeesInstance = Employees(mongoDbConnectionInstance)
 print("Employees instance created with MongoDbConnection:", employeesInstance)
 
-fileHandlingInstance = FileHandling(employeesInstance)
 timekeepingDbInstance = TimekeepingDb(mongoDbConnectionInstance)
+
+fileHandlingInstance = FileHandling(employeesInstance, timekeepingDbInstance)
+
 calculateMonthlySalaryInstance = CalculateMonthlySalary(
     employeesInstance, timekeepingDbInstance, mongoDbConnectionInstance
 )

@@ -16,11 +16,21 @@ class TimekeepingDb:
         self.client = None
         self.collection = None
         self.mongoDbInstance = mongoDbConnectionInstance
+        self.dateInfo = None
+
+    def cutoff_date(self, year, month):
+        self.dateInfo = {
+            "year": int(year),
+            "month": int(month),
+            "date": pd.to_datetime(f"{year}-{month}-01"),
+        }
 
     def write_db(self, jsonData):
         self.collection = self.mongoDbInstance.get_collection(
             os.getenv("COLLECTION_TIMEKEEPING_NAME")
         )
+
+        print(jsonData)
 
         # clear all timekeeping 1st
         self.collection.delete_many({})
@@ -38,8 +48,8 @@ class TimekeepingDb:
         # Replace NaN with None for JSON serialization timekeepingDf = timekeepingDf.where(pd.notnull(timekeepingDf), None
         timekeepingDf = timekeepingDf.where(pd.notnull(timekeepingDf), None)
 
-        query = """SELECT uuid,name, COUNT(case when status like "%RD%" then 1 end) as restDay, sum(finishedwork) as finishedWork, sum(late) as late , sum(absent) as absent
-        FROM timekeepingDf GROUP BY uuid"""
+        query = """SELECT uuid, month,year,COUNT(case when status like "%RD%" then 1 end) as restDay, sum(finishedwork) as finishedWork, sum(late) as late , sum(absent) as absent
+        FROM timekeepingDf GROUP BY uuid,month,year"""
 
         timekeepingDf = psql.sqldf(query, locals())
 

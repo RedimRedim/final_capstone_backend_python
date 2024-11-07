@@ -7,17 +7,22 @@ import pandas as pd
 import pandasql as psql
 import json
 from component.employees import Employees
+from component.timekeepingdb import TimekeepingDb
+
 
 dotenv_path = os.path.join(os.path.dirname(__file__), "../config/.env")
 load_dotenv(dotenv_path)
 
 
 class FileHandling:
-    def __init__(self, employeesInstance: Employees):
+    def __init__(
+        self, employeesInstance: Employees, timekeepingDbInstance: TimekeepingDb
+    ):
         self.filePath = None
         self.timekeepingDf = None
         self.restDf = None
         self.employees = employeesInstance
+        self.timekeepingDbInstance = timekeepingDbInstance
 
     def init_file(self, file):
         self.filePath = file
@@ -26,6 +31,7 @@ class FileHandling:
         self.calculate_file()
 
         jsonData = self.convert_to_json()
+
         return jsonData
 
     def read_file(self):
@@ -49,6 +55,9 @@ class FileHandling:
         return self.timekeepingDf
 
     def formatting_variable(self):
+        self.timekeepingDf["month"] = self.timekeepingDbInstance.dateInfo["month"]
+        self.timekeepingDf["year"] = self.timekeepingDbInstance.dateInfo["year"]
+
         self.timekeepingDf["workingTime"] = pd.to_datetime(
             self.timekeepingDf["workingTime"], errors="coerce"
         )
@@ -63,30 +72,10 @@ class FileHandling:
             self.timekeepingDf["resignDate"], errors="coerce"
         ).dt.date
 
-        self.timekeepingDf["workingTime"] = self.timekeepingDf["workingTime"].apply(
-            lambda x: x.isoformat() if pd.notnull(x) else None
-        )
-        self.timekeepingDf["timeIn"] = self.timekeepingDf["timeIn"].apply(
-            lambda x: x.isoformat() if pd.notnull(x) else None
-        )
-
-        self.timekeepingDf["timeOut"] = self.timekeepingDf["timeOut"].apply(
-            lambda x: x.isoformat() if pd.notnull(x) else None
-        )
-
     def calculate_file(self):
         self.formatting_variable()
-        # Calculate Employee Timekeeping
-        self.timekeepingDf["timeIn"] = pd.to_datetime(
-            self.timekeepingDf["timeIn"], errors="coerce"
-        )
-        self.timekeepingDf["timeOut"] = pd.to_datetime(
-            self.timekeepingDf["timeOut"], errors="coerce"
-        )
-        self.timekeepingDf["workingTime"] = pd.to_datetime(
-            self.timekeepingDf["workingTime"], errors="coerce"
-        )
 
+        # Calculate Employee Timekeeping
         self.timekeepingDf["totalWorkHours"] = self.timekeepingDf.apply(
             lambda row: (
                 (row["timeOut"] - row["timeIn"]).total_seconds() / 60
@@ -111,8 +100,6 @@ class FileHandling:
             ),
             axis=1,
         )
-
-        self.timekeepingDf.to_csv("./data/timekeeping.csv")
 
         self.timekeepingDf["absent"] = self.timekeepingDf.apply(
             lambda row: (
@@ -158,6 +145,18 @@ class FileHandling:
     # implementing SQL query to join and merging
 
     def convert_to_json(self):
+        # Format datetime as ISO 8601 strings
+        self.timekeepingDf["workingTime"] = self.timekeepingDf[
+            "workingTime"
+        ].dt.strftime("%Y-%m-%dT%H:%M:%S")
+        self.timekeepingDf["timeIn"] = self.timekeepingDf["timeIn"].dt.strftime(
+            "%Y-%m-%dT%H:%M:%S"
+        )
+        self.timekeepingDf["timeOut"] = self.timekeepingDf["timeOut"].dt.strftime(
+            "%Y-%m-%dT%H:%M:%S"
+        )
+        self.timekeepingDf["resignDate"] = self.timekeepingDf["resignDate"].astype(str)
+
         data = self.timekeepingDf.to_json(orient="records")
 
         return json.loads(data)

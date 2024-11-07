@@ -1,6 +1,7 @@
 import sys
 import os
 import pandas as pd
+from datetime import datetime
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils.transform_data import calculate_working_rest_days
@@ -22,7 +23,7 @@ class CalculateMonthlySalary:
         mongoDbConnectionInstance: MongoDbConnection,
     ) -> None:
         self.employees = employeesInstance
-        self.timekeeping = timekeepingDbInstance
+        self.timekeepingDbInstance = timekeepingDbInstance
         self.mongoDbInstance = mongoDbConnectionInstance
         self.employeesDf = pd.DataFrame()  # Initialize as empty DataFrame
         self.timekeepingDf = pd.DataFrame()  # Initialize as empty DataFrame
@@ -35,10 +36,9 @@ class CalculateMonthlySalary:
         self.employeesDf.to_csv("./data/employees.csv")
 
     def merging_data(self):
-        cutoff_date = pd.to_datetime("2024-07-01")
 
         self.employeesDf = self.employees.get_employees_data()
-        self.timekeepingDf = self.timekeeping.get_timekeeping_data()
+        self.timekeepingDf = self.timekeepingDbInstance.get_timekeeping_data()
 
         self.employeesDf = self.employeesDf.merge(
             self.timekeepingDf, on="uuid", how="left"
@@ -47,21 +47,30 @@ class CalculateMonthlySalary:
         self.employeesDf = self.employeesDf[
             (
                 (self.employeesDf["isResign"] == True)
-                & (self.employeesDf["resignDate"] >= cutoff_date)
+                & (
+                    self.employeesDf["resignDate"]
+                    >= self.timekeepingDbInstance.dateInfo["date"]
+                )
             )
             | ((self.employeesDf["isResign"] == False))
         ]
 
         self.employeesDf["requiredWorkDays"] = self.employeesDf.apply(
             lambda row: calculate_working_rest_days(
-                2024, 7, row["dayOff"], row["resignDate"]
+                self.timekeepingDbInstance.dateInfo["year"],
+                self.timekeepingDbInstance.dateInfo["month"],
+                row["dayOff"],
+                row["resignDate"],
             )[0],
             axis=1,  # workingDays
         )
 
         self.employeesDf["requiredRestDays"] = self.employeesDf.apply(
             lambda row: calculate_working_rest_days(
-                2024, 7, row["dayOff"], row["resignDate"]
+                self.timekeepingDbInstance.dateInfo["year"],
+                self.timekeepingDbInstance.dateInfo["month"],
+                row["dayOff"],
+                row["resignDate"],
             )[1],
             axis=1,  # restDays
         )
@@ -73,7 +82,8 @@ class CalculateMonthlySalary:
         self.employeesDf["baseSalary"] = self.employeesDf.apply(
             lambda row: (
                 row["basicSalary"] / row["requiredWorkDays"] * row["resignDate"].day
-                if row["isResign"] and row["resignDate"] > cutoff_date
+                if row["isResign"]
+                and row["resignDate"] > self.timekeepingDbInstance.dateInfo["date"]
                 else row["dailySalary"] * (row["finishedWork"] + row["restDay"])
             ),
             axis=1,
