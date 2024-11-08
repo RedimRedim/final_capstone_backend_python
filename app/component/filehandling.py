@@ -55,8 +55,20 @@ class FileHandling:
         return self.timekeepingDf
 
     def formatting_variable(self):
-        self.timekeepingDf["month"] = self.timekeepingDbInstance.dateInfo["month"]
-        self.timekeepingDf["year"] = self.timekeepingDbInstance.dateInfo["year"]
+        self.timekeepingDf["workingTime"] = pd.to_datetime(
+            self.timekeepingDf["workingTime"], errors="coerce"
+        )
+        self.timekeepingDf["month"] = self.timekeepingDf["workingTime"].dt.month
+        self.timekeepingDf["year"] = self.timekeepingDf["workingTime"].dt.year
+
+        if any(
+            self.timekeepingDbInstance.dateInfo["month"] != self.timekeepingDf["month"]
+        ) or any(
+            self.timekeepingDbInstance.dateInfo["year"] != self.timekeepingDf["year"]
+        ):
+            raise ValueError(
+                "Selected Month & Year with workingTime Data are different"
+            )
 
         self.timekeepingDf["workingTime"] = pd.to_datetime(
             self.timekeepingDf["workingTime"], errors="coerce"

@@ -23,7 +23,7 @@ class Employees:
             os.getenv("COLLECTION_EMPLOYEES_NAME")
         )
 
-        employeeData = list(self.collection.find({}))
+        employeeData = list(self.collection.find({}, {"_id": False}))
         employeeDf = pd.DataFrame(employeeData).fillna("")
         return employeeDf
 

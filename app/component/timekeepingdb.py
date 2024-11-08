@@ -33,7 +33,9 @@ class TimekeepingDb:
         print(jsonData)
 
         # clear all timekeeping 1st
-        self.collection.delete_many({})
+        self.collection.delete_many(
+            {"year": self.dateInfo["year"], "month": self.dateInfo["month"]}
+        )
         print("Deleted timekeeping data")
         # insert
         self.collection.insert_many(jsonData)
@@ -43,7 +45,12 @@ class TimekeepingDb:
         self.collection = self.mongoDbInstance.get_collection(
             os.getenv("COLLECTION_TIMEKEEPING_NAME")
         )
-        timekeepingData = list(self.collection.find({}, {"_id": False}))
+        timekeepingData = list(
+            self.collection.find(
+                {"year": self.dateInfo["year"], "month": self.dateInfo["month"]},
+                {"_id": False},
+            )
+        )
         timekeepingDf = pd.DataFrame(timekeepingData)
         # Replace NaN with None for JSON serialization timekeepingDf = timekeepingDf.where(pd.notnull(timekeepingDf), None
         timekeepingDf = timekeepingDf.where(pd.notnull(timekeepingDf), None)

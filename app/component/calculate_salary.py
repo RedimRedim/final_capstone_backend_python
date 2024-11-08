@@ -32,7 +32,6 @@ class CalculateMonthlySalary:
         self.merging_data()
         self.post_to_db()
         print("Uploading employees.csv")
-        print(self.employeesDf)
         self.employeesDf.to_csv("./data/employees.csv")
 
     def merging_data(self):
@@ -41,7 +40,7 @@ class CalculateMonthlySalary:
         self.timekeepingDf = self.timekeepingDbInstance.get_timekeeping_data()
 
         self.employeesDf = self.employeesDf.merge(
-            self.timekeepingDf, on="uuid", how="left"
+            self.timekeepingDf, on="uuid", how="inner"
         )
 
         self.employeesDf = self.employeesDf[
@@ -112,7 +111,17 @@ class CalculateMonthlySalary:
         self.collection = self.mongoDbInstance.get_collection(
             os.getenv("COLLECTION_SALARY_NAME")
         )
-        self.collection.delete_many({})
+
+        print(
+            f'Deleting salary data, Year: {self.timekeepingDbInstance.dateInfo["year"]} Month: {self.timekeepingDbInstance.dateInfo["month"]} '
+        )
+
+        self.collection.delete_many(
+            {
+                "year": self.timekeepingDbInstance.dateInfo["year"],
+                "month": self.timekeepingDbInstance.dateInfo["month"],
+            }
+        )
 
         self.collection.insert_many(self.employeesDf.to_dict("records"))
         print("Salary has been uploaded to MongoDB")
