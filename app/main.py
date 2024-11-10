@@ -27,14 +27,9 @@ def main(year, month, file):
         raise
 
 
-@app.on_event("startup")
-async def startup():
-    try:
-        # Initialization code (e.g., database connections)
-        pass
-    except Exception as e:
-        logging.error(f"Startup error: {e}")
-        raise e
+@app.get("/")
+def testing():
+    return {"message": "API is working"}
 
 
 @app.post("/upload")
