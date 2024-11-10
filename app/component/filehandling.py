@@ -35,13 +35,12 @@ class FileHandling:
         return jsonData
 
     def read_file(self):
-        if self.filePath.filename.lower().endswith(".xlsx"):
-            self.timekeepingDf = self.timekeeping_with_absent_data()
-            self.restDf = pd.read_excel(self.filePath, sheet_name="RD").dropna()
-            # Drop rows where 'uuid' is None or empty
-            self.timekeepingDf = self.timekeepingDf[
-                self.timekeepingDf["uuid"].notna() & (self.timekeepingDf["uuid"] != "")
-            ]
+        self.timekeepingDf = self.timekeeping_with_absent_data()
+        self.restDf = pd.read_excel(self.filePath, sheet_name="RD").dropna()
+        # Drop rows where 'uuid' is None or empty
+        self.timekeepingDf = self.timekeepingDf[
+            self.timekeepingDf["uuid"].notna() & (self.timekeepingDf["uuid"] != "")
+        ]
 
     def timekeeping_with_absent_data(self):
         self.timekeepingDf = pd.read_excel(self.filePath).fillna("")
@@ -152,6 +151,7 @@ class FileHandling:
             LEFT JOIN restDf
             on DATE(restDf.date) = DATE(timekeepingDf.workingTime) and restDf.uuid = timekeepingDf.uuid
             """
+
         self.timekeepingDf = psql.sqldf(query, locals())
 
     # implementing SQL query to join and merging

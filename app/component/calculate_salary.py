@@ -39,9 +39,16 @@ class CalculateMonthlySalary:
         self.employeesDf = self.employees.get_employees_data()
         self.timekeepingDf = self.timekeepingDbInstance.get_timekeeping_data()
 
+        print("employeesDf")
+        print(self.employeesDf)
+        print("timekeepingDf")
+        print(self.timekeepingDf)
+
         self.employeesDf = self.employeesDf.merge(
             self.timekeepingDf, on="uuid", how="inner"
         )
+        print("after processing")
+        print(self.employeesDf)
 
         self.employeesDf = self.employeesDf[
             (

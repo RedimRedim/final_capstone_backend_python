@@ -1,6 +1,6 @@
-flask
 pandas
 pandasql
 pymongo
 python-dotenv
-flask-cors
+fastapi
+uvicorn

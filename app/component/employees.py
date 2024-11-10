@@ -18,7 +18,6 @@ class Employees:
         self.mongoDbInstance = mongoDbConnectionInstance
 
     def get_employees_data(self):
-        print(os.getenv("COLLECTION_EMPLOYEES_NAME"))
         self.collection = self.mongoDbInstance.get_collection(
             os.getenv("COLLECTION_EMPLOYEES_NAME")
         )
