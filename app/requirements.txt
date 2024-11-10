@@ -4,4 +4,4 @@ pymongo
 python-dotenv
 fastapi
 uvicorn
-python-multipart
+python-multipart==0.0.5

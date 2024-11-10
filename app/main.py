@@ -27,6 +27,16 @@ def main(year, month, file):
         raise
 
 
+@app.on_event("startup")
+async def startup():
+    try:
+        # Initialization code (e.g., database connections)
+        pass
+    except Exception as e:
+        logging.error(f"Startup error: {e}")
+        raise e
+
+
 @app.post("/upload")
 async def upload_timekeeping(
     file: UploadFile = File(...),
