@@ -2,6 +2,7 @@ import sys
 import os
 import pandas as pd
 from datetime import datetime
+import numpy as np
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils.transform_data import calculate_working_rest_days
@@ -83,7 +84,7 @@ class CalculateMonthlySalary:
 
         self.employeesDf["dailySalary"] = self.employeesDf.apply(
             lambda row: (row["basicSalary"] / 31), axis=1
-        )
+        ).round(2)
 
         self.employeesDf["baseSalary"] = self.employeesDf.apply(
             lambda row: (
@@ -93,15 +94,15 @@ class CalculateMonthlySalary:
                 else row["dailySalary"] * (row["finishedWork"] + row["restDay"])
             ),
             axis=1,
-        )
+        ).round(2)
 
         self.employeesDf["lateDeduction"] = self.employeesDf.apply(
             lambda row: ((row["dailySalary"] / 8 / 60) * row["late"]), axis=1
-        )
+        ).round(2)
 
         self.employeesDf["absentDeduction"] = self.employeesDf.apply(
             lambda row: (row["dailySalary"] * row["absent"]), axis=1
-        )
+        ).round(2)
 
         self.employeesDf["totalReleasedSalary"] = self.employeesDf.apply(
             lambda row: (
@@ -110,7 +111,7 @@ class CalculateMonthlySalary:
                 - (row["absentDeduction"] if pd.notnull(row["absentDeduction"]) else 0)
             ),
             axis=1,
-        )
+        ).astype(int)
 
         self.employeesDf = self.employeesDf.fillna("")
 
