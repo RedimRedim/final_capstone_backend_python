@@ -15,7 +15,8 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://final-capstone-frontend-7ezn.vercel.app"
+        "https://final-capstone-frontend-7ezn.vercel.app",
+        "https://final-capstone-frontend-7ezn.vercel.app/main.html#",
     ],  # Your Vercel frontend URL
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],  # Allowed methods
