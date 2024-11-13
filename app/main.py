@@ -14,13 +14,10 @@ logging.basicConfig(level=logging.INFO)
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://final-capstone-frontend-7ezn.vercel.app",
-        "https://final-capstone-frontend-7ezn.vercel.app/main.html#",
-    ],  # Your Vercel frontend URL
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE"],  # Allowed methods
-    allow_headers=["Content-Type", "Authorization"],  # Allowed headers
+    allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allow all headers
 )
 
 
