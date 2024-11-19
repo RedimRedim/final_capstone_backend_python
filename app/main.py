@@ -1,5 +1,6 @@
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 import logging
 import io
 import traceback
@@ -38,6 +39,16 @@ def main(year, month, file):
 @app.get("/")
 def testing():
     return {"message": "API is working"}
+
+
+@app.get("/download-sample-file")
+async def download_sample_file():
+    file_path = "static/sample.xlsx"
+    return FileResponse(
+        file_path,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        filename="sample.xlsx",
+    )
 
 
 @app.post("/upload")
