@@ -20,7 +20,11 @@ def calculate_working_rest_days(year, month, offDaysInput, resignDate=None):
         off_days_list = []  # condition when not day off then mark as 31days
 
     first_day = datetime(year, month, 1)
-    last_day = datetime(year, month, calendar.monthrange(year, month)[1])
+
+    if resignDate:
+        last_day = resignDate
+    else:
+        last_day = datetime(year, month, calendar.monthrange(year, month)[1])
 
     working_days = 0
     rest_days = 0

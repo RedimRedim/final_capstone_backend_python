@@ -51,6 +51,8 @@ class CalculateMonthlySalary:
         print("after processing")
         print(self.employeesDf)
 
+        self.employeesDf.to_excel("employees.xlsx")
+
         self.employeesDf = self.employeesDf[
             (
                 (self.employeesDf["isResign"] == True)
