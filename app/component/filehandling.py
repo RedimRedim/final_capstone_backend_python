@@ -97,7 +97,15 @@ class FileHandling:
         )
 
         self.timekeepingDf["finishedWork"] = self.timekeepingDf.apply(
-            lambda row: (1 if row["totalWorkHours"] > 320 else 0),
+            lambda row: (
+                1
+                if row["isResign"]
+                and isinstance(row["resignDate"], pd.Timestamp)
+                and row["resignDate"].date()
+                >= self.timekeepingDbInstance.dateInfo["date"]
+                and row["totalWorkHours"] > 320
+                else 0
+            ),
             axis=1,
         )
 
