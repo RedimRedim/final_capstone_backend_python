@@ -86,6 +86,17 @@ class FileHandling:
     def calculate_file(self):
         self.formatting_variable()
 
+        self.timekeepingDf = self.timekeepingDf[
+            (
+                (self.timekeepingDf["isResign"] == True)
+                & (
+                    self.timekeepingDf["resignDate"]
+                    >= self.timekeepingDbInstance.dateInfo["date"]
+                )
+            )
+            | ((self.timekeepingDf["isResign"] == False))
+        ]
+
         # Calculate Employee Timekeeping
         self.timekeepingDf["totalWorkHours"] = self.timekeepingDf.apply(
             lambda row: (
