@@ -101,6 +101,11 @@ class FileHandling:
             axis=1,
         )
 
+        self.timekeepingDf["totalRestDays"] = self.timekeepingDf.apply(
+            lambda row: row["status"].count("RD") if row["status"] else 0,
+            axis=1,
+        )
+
         self.timekeepingDf["late"] = self.timekeepingDf.apply(
             lambda row: (
                 (row["timeIn"] - row["workingTime"]).total_seconds() / 60
@@ -146,7 +151,7 @@ class FileHandling:
 
         query = """
             SELECT timekeepingDf.*,
-            restDf.status 
+            restDf.status
             FROM timekeepingDf
             LEFT JOIN restDf
             on DATE(restDf.date) = DATE(timekeepingDf.workingTime) and restDf.uuid = timekeepingDf.uuid

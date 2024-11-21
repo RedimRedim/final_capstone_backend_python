@@ -2,6 +2,7 @@ from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 import logging
+import os
 import io
 import traceback
 from datetime import datetime
@@ -49,6 +50,16 @@ async def download_sample_file():
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         filename="sample.xlsx",
     )
+
+
+@app.get("/timekeeping/download")
+async def download_timekeeping():
+    file_path = "data/timekeeping.csv"
+
+    if not os.path.exists(file_path):
+        return HTTPException(status_code=404, detail="timekeeping file not found")
+
+    return FileResponse(file_path, media_type="text/csv", filename="timekeeping.csv")
 
 
 @app.post("/upload")

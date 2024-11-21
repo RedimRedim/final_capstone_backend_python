@@ -1,6 +1,7 @@
 import calendar
 from datetime import datetime, timedelta
 import pandas as pd
+from datetime import date
 
 
 def calculate_working_rest_days(year, month, offDaysInput, resignDate=None):
@@ -21,7 +22,7 @@ def calculate_working_rest_days(year, month, offDaysInput, resignDate=None):
 
     first_day = datetime(year, month, 1)
 
-    if resignDate:
+    if resignDate and resignDate.date() != date(1970, 1, 1):
         last_day = resignDate
     else:
         last_day = datetime(year, month, calendar.monthrange(year, month)[1])
