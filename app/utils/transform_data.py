@@ -21,11 +21,17 @@ def calculate_working_rest_days(year, month, offDaysInput, resignDate=None):
         off_days_list = []  # condition when not day off then mark as 31days
 
     first_day = datetime(year, month, 1)
+    last_day = datetime(year, month, calendar.monthrange(year, month)[1])
 
-    if resignDate and resignDate.date() != date(1970, 1, 1):
+    # change lastDay logic if got resignDate > monthly last_Day
+    if (
+        resignDate
+        and isinstance(resignDate, pd.Timestamp)
+        and resignDate.date() != date(1970, 1, 1)
+        and last_day >= resignDate
+    ):
+        print(resignDate)
         last_day = resignDate
-    else:
-        last_day = datetime(year, month, calendar.monthrange(year, month)[1])
 
     working_days = 0
     rest_days = 0

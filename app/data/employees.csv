@@ -1,4 +1,4 @@
 ,uuid,name,sex,department,employeeType,role,basicSalary,dayOff,isResign,resignDate,createdDate,updatedDate,salary,month,year,restDay,finishedWork,late,absent,requiredWorkDays,requiredRestDays,dailySalary,baseSalary,lateDeduction,absentDeduction,totalReleasedSalary
-0,ID1,Alice Smith,Female,IT,Regular,Software Engineer,100000,Sunday,False,1970-01-01 00:00:00,2023-01-15T09:00:00,2023-01-10T10:30:00,,7,2024,4,0,200,27,27,4,3225.81,12903.24,1344.09,87096.87,-75537
-1,ID2,Bob Johnson,Male,IT,Probation,DevOps Engineer,100000,Saturday&Sunday,False,1970-01-01 00:00:00,2023-02-20T11:00:00,2023-02-15T14:45:00,,7,2024,4,0,180,27,23,8,3225.81,12903.24,1209.68,87096.87,-75403
-2,ID3,fff,Male,IT,Regular,DevOps Engineer,100000,Saturday&Sunday,True,2024-07-02 01:15:00,2023-03-25T08:15:00,2024-10-07T08:59:10.650Z,,7,2024,0,0,0,2,2,0,3225.81,100000.0,0.0,6451.62,93548
+0,ID1,Alice Smith,Female,IT,Regular,Software Engineer,100000,Sunday,False,1970-01-01 00:00:00,2023-01-15T09:00:00,2023-01-10T10:30:00,,7,2024,4,24,200,3,27,4,3225.81,90322.68,1344.09,9677.43,79301
+1,ID2,Bob Johnson,Male,IT,Probation,DevOps Engineer,100000,Saturday&Sunday,False,1970-01-01 00:00:00,2023-02-20T11:00:00,2023-02-15T14:45:00,,7,2024,4,24,180,3,23,8,3225.81,90322.68,1209.68,9677.43,79435
+2,ID3,fff,Male,IT,Regular,DevOps Engineer,100000,Saturday&Sunday,True,2024-07-02 01:15:00,2023-03-25T08:15:00,2024-10-07T08:59:10.650Z,,7,2024,0,1,0,1,2,0,3225.81,100000.0,0.0,3225.81,96774

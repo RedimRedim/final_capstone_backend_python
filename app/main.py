@@ -14,9 +14,16 @@ from component.instance_setup import (
 
 logging.basicConfig(level=logging.INFO)
 app = FastAPI()
+
+origins = [
+    "https://final-capstone-frontend-khaki.vercel.app",  # Allow your specific frontend URL
+    "http://localhost:3000",  # Local development URL (change to match your local URL and port)
+    "http://localhost:8080",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
     allow_headers=["*"],  # Allow all headers
