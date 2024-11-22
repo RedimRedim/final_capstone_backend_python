@@ -87,12 +87,7 @@ class CalculateMonthlySalary:
         ).round(2)
 
         self.employeesDf["baseSalary"] = self.employeesDf.apply(
-            lambda row: (
-                row["basicSalary"] / row["requiredWorkDays"] * row["resignDate"].day
-                if row["isResign"]
-                and row["resignDate"] > self.timekeepingDbInstance.dateInfo["date"]
-                else row["dailySalary"] * (row["finishedWork"] + row["restDay"])
-            ),
+            lambda row: (row["dailySalary"] * (row["finishedWork"] + row["restDay"])),
             axis=1,
         ).round(2)
 
