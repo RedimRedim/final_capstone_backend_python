@@ -8,6 +8,7 @@ import pandasql as psql
 import json
 from component.employees import Employees
 from component.timekeepingdb import TimekeepingDb
+from calendar import monthrange
 
 
 dotenv_path = os.path.join(os.path.dirname(__file__), "../config/.env")
@@ -86,6 +87,9 @@ class FileHandling:
     def calculate_file(self):
         self.formatting_variable()
 
+        self.timekeepingDf["endOfMonthDay"] = self.timekeepingDf.apply(
+            lambda row: monthrange(row["year"], row["month"])[1], axis=1
+        )
         # Calculate Employee Timekeeping
         self.timekeepingDf["totalWorkHours"] = self.timekeepingDf.apply(
             lambda row: (

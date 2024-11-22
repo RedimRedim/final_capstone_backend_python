@@ -55,7 +55,7 @@ class TimekeepingDb:
         # Replace NaN with None for JSON serialization timekeepingDf = timekeepingDf.where(pd.notnull(timekeepingDf), None
         timekeepingDf = timekeepingDf.where(pd.notnull(timekeepingDf), None)
 
-        query = """SELECT uuid, month,year,COUNT(case when status like "%RD%" then 1 end) as restDay, sum(finishedwork) as finishedWork, sum(late) as late , sum(absent) as absent
+        query = """SELECT uuid, month,year,MAX(endOfMonthday) as endOfMonthDay, COUNT(case when status like "%RD%" then 1 end) as restDay, sum(finishedwork) as finishedWork, sum(late) as late , sum(absent) as absent
         FROM timekeepingDf GROUP BY uuid,month,year"""
 
         timekeepingDf = psql.sqldf(query, locals())
