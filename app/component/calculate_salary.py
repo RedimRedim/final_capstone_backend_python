@@ -95,7 +95,7 @@ class CalculateMonthlySalary:
                 * (row["finishedWork"] + row["restDay"] + row["absent"])
             ),
             axis=1,
-        ).round(2)
+        ).astype(int)
 
         self.employeesDf["lateDeduction"] = self.employeesDf.apply(
             lambda row: ((row["dailySalary"] / 8 / 60) * row["late"]), axis=1
