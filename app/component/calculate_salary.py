@@ -92,7 +92,7 @@ class CalculateMonthlySalary:
                 if row["isResign"]
                 and row["resignDate"] > self.timekeepingDbInstance.dateInfo["date"]
                 else row["dailySalary"]
-                * (row["finishedWork"] + row["restDay"] + row["Absent"])
+                * (row["finishedWork"] + row["restDay"] + row["absent"])
             ),
             axis=1,
         ).round(2)
