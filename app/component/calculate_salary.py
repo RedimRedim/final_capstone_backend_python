@@ -30,12 +30,12 @@ class CalculateMonthlySalary:
         self.timekeepingDf = pd.DataFrame()  # Initialize as empty DataFrame
 
     def transform_data(self):
-        self.merging_data()
-        self.post_to_db()
+        self._merging_data()
+        self._post_to_db()
         print("Uploading employees.csv")
         self.employeesDf.to_csv("./data/employees.csv")
 
-    def merging_data(self):
+    def _merging_data(self):
 
         self.employeesDf = self.employees.get_employees_data()
         self.timekeepingDf = self.timekeepingDbInstance.get_timekeeping_data()
@@ -116,7 +116,7 @@ class CalculateMonthlySalary:
 
         self.employeesDf = self.employeesDf.fillna("")
 
-    def post_to_db(self):
+    def _post_to_db(self):
         self.collection = self.mongoDbInstance.get_collection(
             os.getenv("COLLECTION_SALARY_NAME")
         )

@@ -27,23 +27,23 @@ class FileHandling:
 
     def init_file(self, file):
         self.filePath = file
-        self.read_file()
-        self.query_file()  # its joining with employee collection
-        self.calculate_file()
+        self._read_file()
+        self._query_file()  # its joining with employee collection
+        self._calculate_file()
 
-        jsonData = self.convert_to_json()
+        jsonData = self._convert_to_json()
 
         return jsonData
 
-    def read_file(self):
-        self.timekeepingDf = self.timekeeping_with_absent_data()
+    def _read_file(self):
+        self.timekeepingDf = self._timekeeping_with_absent_data()
         self.restDf = pd.read_excel(self.filePath, sheet_name="RD").dropna()
         # Drop rows where 'uuid' is None or empty
         self.timekeepingDf = self.timekeepingDf[
             self.timekeepingDf["uuid"].notna() & (self.timekeepingDf["uuid"] != "")
         ]
 
-    def timekeeping_with_absent_data(self):
+    def _timekeeping_with_absent_data(self):
         self.timekeepingDf = pd.read_excel(self.filePath).fillna("")
         employeeData = self.employees.get_employees_data()[
             ["uuid", "isResign", "resignDate"]
@@ -54,7 +54,7 @@ class FileHandling:
 
         return self.timekeepingDf
 
-    def formatting_variable(self):
+    def _formatting_variable(self):
         self.timekeepingDf["workingTime"] = pd.to_datetime(
             self.timekeepingDf["workingTime"], errors="coerce"
         )
@@ -84,8 +84,8 @@ class FileHandling:
             self.timekeepingDf["resignDate"], errors="coerce"
         ).dt.date
 
-    def calculate_file(self):
-        self.formatting_variable()
+    def _calculate_file(self):
+        self._formatting_variable()
 
         self.timekeepingDf["endOfMonthDay"] = self.timekeepingDf.apply(
             lambda row: monthrange(row["year"], row["month"])[1], axis=1
@@ -155,7 +155,7 @@ class FileHandling:
 
         self.timekeepingDf.to_csv("./data/timekeeping.csv")
 
-    def query_file(self):
+    def _query_file(self):
         # merging all employees dates with timeIn timeOut
         restDf = self.restDf
         timekeepingDf = self.timekeepingDf
@@ -172,7 +172,7 @@ class FileHandling:
 
     # implementing SQL query to join and merging
 
-    def convert_to_json(self):
+    def _convert_to_json(self):
         # Format datetime as ISO 8601 strings
         self.timekeepingDf["workingTime"] = self.timekeepingDf[
             "workingTime"

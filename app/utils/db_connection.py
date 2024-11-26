@@ -10,9 +10,9 @@ class MongoDbConnection:
     def __init__(self):
         self.client = None
         self.db = None
-        self.connect_db()
+        self._connect_db()
 
-    def connect_db(self):
+    def _connect_db(self):
         if not self.client:
             try:
                 self.client = MongoClient(
