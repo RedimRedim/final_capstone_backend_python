@@ -116,6 +116,17 @@ class CalculateMonthlySalary:
 
         self.employeesDf = self.employeesDf.fillna("")
 
+        self._employees_error_checker()
+
+    def _employees_error_checker(self):
+        if (self.employeesDf["restDay"] > self.employeesDf["requiredRestDays"]).any():
+            raise ValueError(
+                "Some employees have restDay exceeding requiredRestDays:\n"
+                + self.employeesDf[
+                    self.employeesDf["restDay"] > self.employeesDf["requiredRestDays"]
+                ].to_string(index=False)
+            )
+
     def _post_to_db(self):
         self.collection = self.mongoDbInstance.get_collection(
             os.getenv("COLLECTION_SALARY_NAME")
